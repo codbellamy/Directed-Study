@@ -11,15 +11,8 @@
 #Imports the ability to work with matricies easily
 import numpy as np
 
-#Sigmoid function
-def sigmoid(z):
-    
-    return 1.0/(1.0+np.exp(-z))
-
-#Sigmoid function derivative
-def sigmoid_prime(z):
-    
-    return sigmoid(z)*(1-sigmoid(z))
+#Imports the ability to work with advanced mathematic functions
+import math
 
 #%%############################################################################
 #                                                                             #
@@ -77,47 +70,152 @@ class NN:
             
             #Sets the new activation equal to the sigmoid function of the
             #neuron output
-            activation = sigmoid(z)
+            activation = self.sigmoid(z)
             
         #Returns the final activation before the sigmoid function is run
         return z
     
     ###########################################################################
     #                                                                         #
-    # Name:       cost                                                        #  
-    # Parameters: data  - all the training data to run through a fwd pass     #
-    #             y     - the labels for the training data                    #
-    # Returns:    error - the error term of the cost function                 #
-    # Notes:      
+    # Name:       sigmoid                                                     #  
+    # Parameters: z     - the value passed in, typically the ouput activation # 
+    #                     of a neuron                                         #
+    # Returns:    [...] - the sigmoid function value of z                     #
+    # Notes:      This allows our neuron output to be any number from 0 to 1  #
     #                                                                         #
     ###########################################################################
     
-    #Quadratic Cost Function
+    def sigmoid(self, z):
+        
+        #The sigmoid function value of z
+        return 1.0/(1.0+np.exp(-z))
+    
+    ###########################################################################
+    #                                                                         #
+    # Name:       cost                                                        #  
+    # Parameters: data  - all the training data to run through a fwd pass     #
+    #             y     - the labels for the training data                    #
+    # Returns:    cost - the average cost for all the data passed in          #
+    # Notes:      The cross-entropy cost funtion, this is a way to assesss    #
+    #             success                                                     #
+    #                                                                         #
+    ###########################################################################
+    
+    #Cross-Entropy Cost Function
     def cost(self, data, y):
         
-        MSE = 0
-        
-        for d, actual in zip(data, y):
-            
-            MSE += (sigmoid(self.fwdPass(d)) - actual)**2
-        
-        MSE /= 2
-        
-        return MSE
-    
-    #Quadratic Cost Function derivative
-    def cost_prime(self, data, y):
-        
+        #Defaults the cost to be 0
         cost = 0
         
+        #For all the data that was passed in
         for d, actual in zip(data, y):
             
-            cost += (sigmoid(self.fwdPass(d))-actual)* \
-                     sigmoid_prime(self.fwdPass(d))
+            #Calculates the predicted response
+            a = self.sigmoid(self.fwdPass(d))
             
+            #The actual response
+            cost += (actual*math.log(a)) + ((1-actual)*math.log(1-a))
+        
+        #Divides by the -lenght of the data, we want the average cost
+        cost /= -len(data)
+        
+        #Returns the average cost of the data
+        return cost
+    
+    ###########################################################################
+    #                                                                         #
+    # Name:       cost_prime_W                                                #  
+    # Parameters: data  - all the training data to run through a fwd pass     #
+    #             y     - the labels for the training data                    #
+    # Returns:    cost - the average derivative of cost for all the data      # 
+    #                    passed in with respect to the weights                #
+    # Notes:      The derivative of the cross-entropy cost funtion with       #
+    #             respect to weights, this is how we will change the weights  #
+    #                                                                         #
+    ###########################################################################
+    
+    #Cross-Entropy Cost Function derivative with respect to weights
+    def cost_prime_W(self, data, y, reg = 0.1):
+        
+        #Defaults the cost to 0
+        cost = 0
+        
+        #Loops through the predicted and actual value of each data point
+        for d, actual in zip(data, y):
+            
+            #The predicted data point
+            a = self.sigmoid(self.fwdPass(d))
+            
+            #The actual data point
+            cost += d*(a - actual)
+            
+        #Divides by the number of data points, we want the average derivative
         cost /= len(data)
         
+        #Returns the average derivative with respect to weights
         return cost
+    
+    ###########################################################################
+    #                                                                         #
+    # Name:       cost_prime_B                                                #  
+    # Parameters: data  - all the training data to run through a fwd pass     #
+    #             y     - the labels for the training data                    #
+    # Returns:    cost - the average derivative of cost for all the data      # 
+    #                    passed in with respect to bias                       #
+    # Notes:      The derivative of the cross-entropy cost funtion with       #
+    #             respect to bias, this is how we will change bias            #
+    #                                                                         #
+    ###########################################################################
+    
+    #Cross-Entropy Cost Function derivative with respect to bias
+    def cost_prime_B(self, data, y):
+        
+        #Defeaults the cost to be 0
+        cost = 0
+        
+        #Loops through the predicted and actual value of each data point
+        for d, actual in zip(data, y):
+            
+            #The predicted data point
+            a = self.sigmoid(self.fwdPass(d))
+            
+            #Adds the predicted data point - the actual data point
+            cost += (a - actual)
+          
+        #Divdes by the number of data points, we want the average derivative
+        cost /= len(data)
+        
+        #Returns the average derivative with repect to bias
+        return cost
+    
+    ###########################################################################
+    #                                                                         #
+    # Name:       test                                                        #
+    # Parameters: data    - all the training data to run through the training #
+    #                       algorithm                                         #
+    #             y       - all the trianing labels to compare outputs to     #
+    # Returns:    success - the percentage of observations the network got    #
+    #                       correct                                           #
+    # Notes:      assesses accuracy of the neural network                     #
+    #                                                                         #
+    ###########################################################################
+    
+    def test(self, data, y):
+        
+        #Defualts a counter of the observations correctly guessed
+        ctr = 0
+        
+        #Prints results
+        for d,actual in zip(x,y):
+            
+            #predicted
+            pred = n.sigmoid(n.fwdPass(d)) >= 0.5
+            
+            #Adds a 0 if incorrect, adds a 1 if correct
+            ctr += pred == actual
+            
+        #Returns the success rate percentage
+        return ctr/ len(data)
     
     ###########################################################################
     #                                                                         #
@@ -132,37 +230,27 @@ class NN:
     #                                                                         #
     ###########################################################################
     
-    def train(self, data, y, eta = 0.1, epsilon = 0.05):
+    def train(self, data, y, eta = 0.1, epsilon = 1.0):
         
         #Defualts the epoch to be 0
         epoch = 0
         
-        #While the error is greater than than 5%
-        while self.cost(data, y) >= epsilon:
+        #While the success rate is less than 100%
+        while self.test(data, y) < epsilon:
             
-            #Chooses a random index in the trianing data set
-            r = np.random.randint(len(data))
-            
-            #Finds the predicted output
-            pred = sigmoid(self.fwdPass(data[r]))
-            
-            #Finds the true output
-            target = y[r]
-                        
             #Calculates partial derivatives
-            dcost_pred = (pred-target)
-            dpred_dz   = sigmoid_prime(self.fwdPass(data[r]))
-            dz_dw = [ data[r][0], data[r][1]]
+            dCost_dW = self.cost_prime_W(data, y)
+            dCost_dB = self.cost_prime_B(data, y)
             
             #The new weight is the old weight - the learning rate * the 
             #derivative of the cost with respect to weight
-            self.weights = [ w - eta*(dcost_pred*dpred_dz*dw) 
-                             for w, dw in zip(self.weights, dz_dw) ]
+            self.weights = [ w - eta*dCost_dW 
+                             for w in self.weights ]
             
             #The new bias is the old bias - the learning rate * the derivative
             #of the cost with respect to bias
-            self.biases = [ b - eta*(dcost_pred*dpred_dz) 
-                            for b in self.biases                   ]
+            self.biases = [ b - eta*dCost_dB 
+                            for b in self.biases   ]
             
             #Incrments the epoch
             epoch += 1
@@ -204,32 +292,31 @@ print('Final Cost:     ', n.cost(x,y))
 print()
 
 #Prints results
-
 for d,actual in zip(x,y):
     
     #predicted
-    pred = sigmoid(n.fwdPass(d)) >= 0.5
+    pred = n.sigmoid(n.fwdPass(d)) >= 0.5
     
     #Prints predicted, actual, predicted = Actual
     print('Predicted:',pred,'Actual:',actual,'Correct:', pred == actual)
     
 #%%########################### SAMPLE OUTPUT ##################################
-#Initial Weight:  [array([[ 1.71728863,  1.57549822],
-#       [ 0.43519291, -0.43131004]]), array([[-0.62300017,  0.68496398]])]
-#Initial Bias:    [[ 0.55354543]
-# [ 0.27741642]
-# [-1.47872712]]
-#Initial Cost:    [0.56832537]
+#Initial Weight:  [array([[-0.66391714, -1.12887629],
+#       [ 0.54771647,  1.20667158]]), array([[0.0346137 , 1.34434781]])]
+#Initial Bias:    [[ 2.78358205]
+# [-0.21102442]
+# [ 1.04729601]]
+#Initial Cost:    1.1178081293910715
 #
 #---------- Learning ----------
 #
-#Epochs to Train: 3515
-#Final Weight:    [array([[3.19456913, 3.05277872],
-#       [1.91247342, 1.04597046]]), array([[3.4542791 , 4.76224325]])]
-#Final Bias:      [array([-3.4616428]), array([-3.73777181]), array([-5.49391535])]
-#Final Cost:      [0.0499118]
+#Epochs to Train: 24
+#Final Weight:    [array([[-0.80164086, -1.27230312],
+#       [ 0.40999275,  1.06324476]]), array([[-0.10311002,  1.20092098]])]
+#Final Bias:      [array([1.91796633]), array([-1.07664014]), array([0.18168029])]
+#Final Cost:      0.6664386798489834
 #
 #Predicted: [ True] Actual: 1 Correct: [ True]
 #Predicted: [False] Actual: 0 Correct: [ True]
 #Predicted: [False] Actual: 0 Correct: [ True]
-#Predicted: [False] Actual: 0 Correct: [ True]    
+#Predicted: [False] Actual: 0 Correct: [ True]
