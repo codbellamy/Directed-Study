@@ -161,7 +161,7 @@ class Network:
        
         #Loops through each epoch to train the network
         for epoch in range(maxEpochs):
-        
+            print('EPOCH:', epoch+1)
             #Generates random indicies for a random sample
             randIndicies = [ random.randrange(0, len(trainingInput)) 
                              for _ in range(batchSize)              ]
@@ -220,7 +220,7 @@ class Network:
             predicted = self.forwardPass(testSet[i])
             
             #Increments count if there was a correct prediciton
-            count += ((predicted >= 0.5) == y[i])
+            count += ((predicted >= 0.5) == testResponse[i])
         
         #Returns the number of successful predictions
         return count

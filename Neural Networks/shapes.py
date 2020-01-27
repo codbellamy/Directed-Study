@@ -17,7 +17,7 @@ from Network import Network
 
 
 #Creates the network
-digits = Network([256, 16, 1])
+digits = Network([256, 8, 1])
 
 #Defaults lists of input and response vectors
 data = []
