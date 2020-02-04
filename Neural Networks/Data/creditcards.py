@@ -20,19 +20,22 @@ import random
 #Imports the Network3 class
 from Network3 import Network3
 
+#Import random test set generator
+from TestSample import generateRandomTestSample as generate
+
 #%%############################### CONSTANTS ##################################
 
 #The size of each layer in the network
-NETWORK_SIZE = [29, 20, 1]
+NETWORK_SIZE = [29, 5, 1]
 
 #A constant, the learning rate
-ETA = 1000
+ETA = 0.1
 
 #The number of epochs to train for
 MAX_EPOCHS = 5
 
 #The size of each batch for backpropagation
-BATCH_SIZE = 10000
+BATCH_SIZE = 100
 
 #Loads in sigmoid function from the scipy library
 sigmoid = lambda x: sp.expit(x)
@@ -45,41 +48,69 @@ print('---------------- LOADING DATA ----------------')
 #Creates a Network3 object
 net3 = Network3(NETWORK_SIZE, ETA, None)
 
-#Loads in the dataset
-trainFile = open("./creditcard.csv", 'r')
-trainList = trainFile.readlines()
-trainFile.close()
-
 #Defaults lists of inputs and labels
 trainingSet = []
 testingSet  = []
 
-maxes = np.asfarray(trainList[1].split(',')[:-1])
-mins  = np.asfarray(trainList[2].split(',')[:-1])
+#Generate tuple of class zeros and class ones to set aside for training set (zeros, ones)
+randomTestSelections = generate()
+
+#Read in all data into class[zeros, ones]
+readData = []
+zeros = open('./class0.csv','r')
+ones = open('./class1.csv','r')
+readData.append(zeros.readlines())
+readData.append(ones.readlines())
+zeros.close()
+ones.close()
+
+MAX_ROWS = 448 #Zero index (449)
 
 #Loops through each line of the csv file
-for datum in trainList[3:]:
-    
-    #Takes all the values in the row and splits them by the comma
-    rowVals = datum.split(',')
-    
-    #Takes the values except for the labels
-    vals = (np.asfarray(rowVals[:-1]) - mins) / ( maxes + mins )
-    
-    #Scales the image
-    x = vals[1:]
-    
-    #Takes the label of the data and scales it
-    y = int(rowVals[-1].strip())
-    
-    
-    if random.randrange(4) == 0:
+for each in range(2):
+    for rowIndex in randomTestSelections[each]:
+
+        #Takes all the values in the row and splits them by the comma
+        rowVals = readData[each][rowIndex].split(',')
         
-        testingSet.append( (x, y) )
+        #Takes the values except for the labels
+        vals = np.asfarray(rowVals[:-1])
         
-    else:
+        #Scales the image
+        x = vals
         
-        trainingSet.append( (x, y) )
+        #Takes the label of the data and scales it
+        y = int(rowVals[-1].strip())
+
+        testingSet.append((x, y))
+
+    for datum in range(len(readData[each])):
+
+        if datum == 0:
+            continue
+
+        if not len(trainingSet) < 1:
+            if each == 0 and len(trainingSet[0]) == MAX_ROWS + 1:
+                break
+
+        if datum in randomTestSelections[each]:
+            continue
+
+        #Takes all the values in the row and splits them by the comma
+        rowVals = readData[each][datum].split(',')
+        
+        #Takes the values except for the labels
+        vals = np.asfarray(rowVals[:-1])
+        
+        #Scales the image
+        x = vals
+        
+        #Takes the label of the data and scales it
+        y = int(rowVals[-1].strip())
+
+        trainingSet.append((x, y))
+
+
     
     
 #%%############################### EXECUTION ##################################
