@@ -2,8 +2,6 @@
 
 #Loads necessary (and probably some unnecessary modules)
 import torch
-import torchvision
-from torchvision import transforms, datasets
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
@@ -12,6 +10,8 @@ import numpy as np
 
 #The maximum number of epochs to run
 EPOCHS = 50
+eta    = 1e-2
+batch  = 10000
 
 #%%
 #Loads in the dataset as a csv file
@@ -38,11 +38,11 @@ for datum in testList[3:]:
     vals = (vals - mins) / ( maxes - mins )
     
     #loads in the data using a datatype that torch can deal with
-    x = torch.tensor(vals[:-1], dtype = torch.float).view(-1, 4)
+    x = torch.tensor(vals[:-1], dtype = torch.float).view(-1, 3)
     y = torch.tensor(vals[-1])
     
     #1/4 chance of being put in the test set as opposed to the training set
-    if random.randrange(4) <= 1:
+    if random.randrange(4) == 0:
         
         #Appends the scaled label and datum to the inputs and labels list
         testingSet.append( (x, y) )
@@ -52,9 +52,9 @@ for datum in testList[3:]:
         trainingSet.append( (x, y) )
 
 #loads the training and test set into batches for the network
-trainset = torch.utils.data.DataLoader(trainingSet, batch_size = 10000,
+trainset = torch.utils.data.DataLoader(trainingSet, batch_size = batch,
                                        shuffle = True)
-testset  = torch.utils.data.DataLoader(testingSet,  batch_size = 10000,
+testset  = torch.utils.data.DataLoader(testingSet,
                                        shuffle = True)
 
 #%%
@@ -68,19 +68,21 @@ class Net(nn.Module):
         super().__init__()
         
         #fully connected layer 1
-        self.fc1 = nn.Linear(4, 10) 
-                                     
-        #fully connected layer 2
-        self.fc2 = nn.Linear(10, 10)
-        
-        self.fc3 = nn.Linear(10, 1)
+        self.fc1 = nn.Linear(3, 50) 
+        self.fc2 = nn.Linear(50, 50) 
+              
+#        #fully connected layer 2
+        self.fc3 = nn.Linear(50, 1)
         
     #forward pass
     def forward(self, x):
         
+        #relu layers to make back propagation feasible in deep networks
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        x = F.relu(self.fc3(x))
+
+        #sigmoid to make a probability of being true or false reasonable
+        x = torch.sigmoid(self.fc3(x))
 
         
         return x
@@ -88,10 +90,10 @@ class Net(nn.Module):
     
 #Creates the network object
 net = Net().float()
+optimizer = optim.Adam(net.parameters(), lr = eta)
 
 #loops through each epoch
 for epoch in range(EPOCHS):
-    optimizer = optim.Adam(net.parameters(), lr = 5e-2)
     #for each batch
     for data in trainset:
         
@@ -101,7 +103,7 @@ for epoch in range(EPOCHS):
         net.zero_grad() #zeros out the gradient before it updates it
         
         #calculates the output using a forward pass
-        output = net(x.view(-1, 4).float())
+        output = net(x.view(-1, 3).float())
         #calculates loss
         loss   = F.mse_loss(output, y.view(-1, 1))   
         #calculates weight adjustments using backpropagation
@@ -119,13 +121,13 @@ for epoch in range(EPOCHS):
         #loops through testing set
         for data in testset:
             x, y = data
-            output = net(x.view(-1, 4).float())
+            output = net(x.view(-1, 3).float())
             
             #loops through labels
             for idx, i in enumerate(output):
                 
-                if i == y[idx]:
+                if (i >= 0.5) == y[idx]:
                     correct += 1
                 total += 1
                 
-    print('Accuracy:', round(correct/total, 5))
+    print('Accuracy:', round(correct/total, 15))
