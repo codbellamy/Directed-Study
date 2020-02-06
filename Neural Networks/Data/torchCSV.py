@@ -64,29 +64,28 @@ testset  = torch.utils.data.DataLoader(testingSet,
 class Net(nn.Module):
     
     #Class constructor
-    def __init__(self):
+    def __init__(self, structure):
         
         #Runs nn.Module constructor
         super().__init__()
-        
-        #fully connected layer 1
-        self.fc1 = nn.Linear(columns_in, 50) 
-        self.fc2 = nn.Linear(50, 50) 
-              
-#        #fully connected layer 2
-        self.fc3 = nn.Linear(50, columns_out)
+
+        fc = lambda a, b: nn.Linear(a, b)
+        self.layers = []
+
+        for a in range(len(structure) - 1):
+            b = a + 1
+            self.layers.append(fc(structure[a], structure[b]))
         
     #forward pass
     def forward(self, x):
         
         #relu layers to make back propagation feasible in deep networks
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
+        for layer in self.layers[:-1]:
+            x = F.relu(layer(x))
 
         #sigmoid to make a probability of being true or false reasonable
-        x = torch.sigmoid(self.fc3(x))
+        x = torch.sigmoid(self.layers[-1](x))
 
-        
         return x
     
     
