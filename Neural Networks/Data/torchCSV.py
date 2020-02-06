@@ -11,11 +11,13 @@ import numpy as np
 #The maximum number of epochs to run
 EPOCHS = 50
 eta    = 1e-2
-batch  = 10000
+batch  = 100
+columns_in = 13
+columns_out = 1
 
 #%%
 #Loads in the dataset as a csv file
-testFile = open("./USvideos.csv", 'r')
+testFile = open("./heart.csv", 'r')
 testList = testFile.readlines()
 testFile.close()
 
@@ -28,7 +30,7 @@ mins  = np.asfarray(testList[1].strip().split(','))
 maxes = np.asfarray(testList[2].strip().split(','))
 
 #Loops through each line of the csv file
-for datum in testList[3:]:
+for datum in testList[columns_in:]:
     
     
     #Takes the values except for the labels
@@ -38,8 +40,8 @@ for datum in testList[3:]:
     vals = (vals - mins) / ( maxes - mins )
     
     #loads in the data using a datatype that torch can deal with
-    x = torch.tensor(vals[:-1], dtype = torch.float).view(-1, 3)
-    y = torch.tensor(vals[-1])
+    x = torch.tensor(vals[:-columns_out], dtype = torch.float).view(-1, columns_in)
+    y = torch.tensor(vals[-columns_out])
     
     #1/4 chance of being put in the test set as opposed to the training set
     if random.randrange(4) == 0:
@@ -68,11 +70,11 @@ class Net(nn.Module):
         super().__init__()
         
         #fully connected layer 1
-        self.fc1 = nn.Linear(3, 50) 
+        self.fc1 = nn.Linear(columns_in, 50) 
         self.fc2 = nn.Linear(50, 50) 
               
 #        #fully connected layer 2
-        self.fc3 = nn.Linear(50, 1)
+        self.fc3 = nn.Linear(50, columns_out)
         
     #forward pass
     def forward(self, x):
@@ -103,9 +105,9 @@ for epoch in range(EPOCHS):
         net.zero_grad() #zeros out the gradient before it updates it
         
         #calculates the output using a forward pass
-        output = net(x.view(-1, 3).float())
+        output = net(x.view(-1, columns_in).float())
         #calculates loss
-        loss   = F.mse_loss(output, y.view(-1, 1))   
+        loss   = F.mse_loss(output, y.view(-1, columns_out))   
         #calculates weight adjustments using backpropagation
         loss.backward()
         #updates weights and biases
@@ -121,7 +123,7 @@ for epoch in range(EPOCHS):
         #loops through testing set
         for data in testset:
             x, y = data
-            output = net(x.view(-1, 3).float())
+            output = net(x.view(-1, columns_in).float())
             
             #loops through labels
             for idx, i in enumerate(output):

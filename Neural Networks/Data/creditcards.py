@@ -26,7 +26,7 @@ from TestSample import generateRandomTestSample as generate
 #%%############################### CONSTANTS ##################################
 
 #The size of each layer in the network
-NETWORK_SIZE = [29, 5, 1]
+NETWORK_SIZE = [29, 15, 15, 1]
 
 #A constant, the learning rate
 ETA = 0.1
