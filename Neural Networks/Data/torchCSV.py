@@ -12,12 +12,13 @@ import numpy as np
 EPOCHS = 50
 eta    = 1e-2
 batch  = 100
-columns_in = 13
-columns_out = 1
+structure = [3,50,50,1]
+columns_in = structure[0]
+columns_out = structure[-1]
 
 #%%
 #Loads in the dataset as a csv file
-testFile = open("./heart.csv", 'r')
+testFile = open("./USvideos.csv", 'r')
 testList = testFile.readlines()
 testFile.close()
 
@@ -40,7 +41,7 @@ for datum in testList[columns_in:]:
     vals = (vals - mins) / ( maxes - mins )
     
     #loads in the data using a datatype that torch can deal with
-    x = torch.tensor(vals[:-columns_out], dtype = torch.float).view(-1, columns_in)
+    x = torch.tensor(vals[:-columns_out], dtype = torch.float, device='cuda:0').view(-1, columns_in)
     y = torch.tensor(vals[-columns_out])
     
     #1/4 chance of being put in the test set as opposed to the training set
@@ -67,20 +68,17 @@ class Net(nn.Module):
     def __init__(self, structure):
         
         #Runs nn.Module constructor
-        super().__init__()
+        super(Net, self).__init__()
 
         fc = lambda a, b: nn.Linear(a, b)
-        self.layers = []
 
-        for a in range(len(structure) - 1):
-            b = a + 1
-            self.layers.append(fc(structure[a], structure[b]))
+        self.params = nn.ParameterList([fc(structure[i], structure[i+1]) for i in range(len(structure)-1)])
         
     #forward pass
     def forward(self, x):
         
         #relu layers to make back propagation feasible in deep networks
-        for layer in self.layers[:-1]:
+        for layer in self.params[:-1]:
             x = F.relu(layer(x))
 
         #sigmoid to make a probability of being true or false reasonable
@@ -90,7 +88,7 @@ class Net(nn.Module):
     
     
 #Creates the network object
-net = Net().float()
+net = Net(structure).float()
 optimizer = optim.Adam(net.parameters(), lr = eta)
 
 #loops through each epoch
