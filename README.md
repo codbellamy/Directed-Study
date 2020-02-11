@@ -5,6 +5,8 @@ Welcome to the CGA Spring 2020 Directed Study! Hope you all are as excited as I 
 
 If you have any questions about GitHub or how to use any of the features, please feel free to send me a message on here or ask me during one of our meetings.
 
-Tuesday 1300
+Dr. Frommer - (860) 389-4460
 
-Thursday 0925
+Tuesday 1300 (SAT 021, 005)
+
+Thursday 0925 (SAT 134)
