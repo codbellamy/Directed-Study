@@ -7,6 +7,6 @@ If you have any questions about GitHub or how to use any of the features, please
 
 Dr. Frommer - (860) 389-4460
 
-Tuesday 1300
+Tuesday 1300 (SAT 021, 005)
 
-Thursday 0925
+Thursday 0925 (SAT 134)
