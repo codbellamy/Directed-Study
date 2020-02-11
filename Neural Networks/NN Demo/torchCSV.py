@@ -10,8 +10,15 @@ import numpy as np
 
 #The maximum number of epochs to run
 EPOCHS = 25
+
+#Eta is a greek letter. This is the learning rate constant
 eta    = 1e-3
+
+#Number of rows to train with
 batch  = 100
+
+#Structure for 3 inputs, 2 hidden layers, and one output
+#DO NOT RELY ON THIS FOR A SIMPLE TWEAK TO THE LAYERS
 structure = [3,5,2,1]
 columns_in = structure[0]
 columns_out = structure[-1]
@@ -51,7 +58,7 @@ for datum in testList[columns_in:]:
         testingSet.append( (x, y) )
         
     else:
-        
+        #Appends the scaled label and datum to the inputs and labels list for training
         trainingSet.append( (x, y) )
 
 #loads the training and test set into batches for the network
@@ -74,15 +81,14 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(structure[1],structure[2])
         self.fc3 = nn.Linear(structure[2],structure[3])
         
-    #forward pass
+    #feed-forward pass
     def forward(self, x):
         
-        #relu layers to make back propagation feasible in deep networks
-
+        #relu is an activation function that we are choosing to replace sigmoid for these layers
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
 
-        #sigmoid to make a probability of being true or false reasonable
+        #sigmoid to make a probability of being true or false reasonable for our output
         x = torch.sigmoid(self.fc3(x))
 
         return x
@@ -90,6 +96,8 @@ class Net(nn.Module):
     
 #Creates the network object
 net = Net(structure).float()
+
+#Optimizes our network, gotta go fast!
 optimizer = optim.Adam(net.parameters(), lr = eta)
 
 #loops through each epoch
