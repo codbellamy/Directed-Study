@@ -1,0 +1,43 @@
+C:\Users\William Sergio\Documents\GitHub\Directed-Study\Neural Networks\NN Demo
+Epoch: 1        Accuracy: 54.79%
+Epoch: 2        Accuracy: 58.35%
+Epoch: 3        Accuracy: 65.97%
+Epoch: 4        Accuracy: 74.77%
+Epoch: 5        Accuracy: 77.58%
+Epoch: 6        Accuracy: 80.04%
+Epoch: 7        Accuracy: 81.65%
+Epoch: 8        Accuracy: 82.07%
+Epoch: 9        Accuracy: 83.51%
+Epoch: 10       Accuracy: 83.83%
+Epoch: 11       Accuracy: 83.84%
+Epoch: 12       Accuracy: 83.95%
+Epoch: 13       Accuracy: 83.96%
+Epoch: 14       Accuracy: 84.42%
+Epoch: 15       Accuracy: 84.29%
+Epoch: 16       Accuracy: 84.45%
+Epoch: 17       Accuracy: 84.72%
+Epoch: 18       Accuracy: 85.05%
+Epoch: 19       Accuracy: 84.93%
+Epoch: 20       Accuracy: 84.76%
+Epoch: 21       Accuracy: 85.36%
+Epoch: 22       Accuracy: 84.93%
+Epoch: 23       Accuracy: 85.11%
+Epoch: 24       Accuracy: 84.76%
+Epoch: 25       Accuracy: 84.66%
+('fc1.weight', Parameter containing:
+tensor([[-5.7489, -4.6552, -2.7026],
+        [ 4.8011,  4.9275,  2.4923],
+        [ 5.1196,  4.0475,  2.4355],
+        [ 0.2052, -0.4840,  0.0249],
+        [-0.1815, -0.3372,  0.0567]], requires_grad=True))
+('fc1.bias', Parameter containing:
+tensor([ 0.4604,  0.1001,  0.0456, -0.1308, -0.0292], requires_grad=True))
+('fc2.weight', Parameter containing:
+tensor([[-1.9972,  3.2747,  4.1252, -0.2330,  0.2128],
+        [-0.0138, -0.4132, -0.1969, -0.2690, -0.4395]], requires_grad=True))
+('fc2.bias', Parameter containing:
+tensor([ 0.2920, -0.3047], requires_grad=True))
+('fc3.weight', Parameter containing:
+tensor([[4.0003, 0.4348]], requires_grad=True))
+('fc3.bias', Parameter containing:
+tensor([-2.1305], requires_grad=True))
