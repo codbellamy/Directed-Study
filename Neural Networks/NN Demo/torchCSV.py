@@ -9,7 +9,7 @@ import random
 import numpy as np
 
 #The maximum number of epochs to run
-EPOCHS = 25
+EPOCHS = 50
 
 #Eta is a greek letter. This is the learning rate constant
 eta    = 1e-3
@@ -19,7 +19,7 @@ batch  = 100
 
 #Structure for 3 inputs, 2 hidden layers, and one output
 #DO NOT RELY ON THIS FOR A SIMPLE TWEAK TO THE LAYERS
-structure = [3,5,2,1]
+structure = [3,1]
 columns_in = structure[0]
 columns_out = structure[-1]
 
@@ -77,9 +77,9 @@ class Net(nn.Module):
         #Runs nn.Module constructor
         super(Net, self).__init__()
 
-        self.fc1 = nn.Linear(structure[0],structure[1])
-        self.fc2 = nn.Linear(structure[1],structure[2])
-        self.fc3 = nn.Linear(structure[2],structure[3])
+        self.fc1 = nn.Linear(columns_in,5)
+        self.fc2 = nn.Linear(5,3)
+        self.fc3 = nn.Linear(3,columns_out)
         
     #feed-forward pass
     def forward(self, x):

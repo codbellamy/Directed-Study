@@ -72,13 +72,13 @@ class Net(nn.Module):
 
         fc = lambda a, b: nn.Linear(a, b)
 
-        self.params = nn.ParameterList([fc(structure[i], structure[i+1]) for i in range(len(structure)-1)])
+        self.layers = [fc(structure[i], structure[i+1]) for i in range(len(structure)-1)]
         
     #forward pass
     def forward(self, x):
         
         #relu layers to make back propagation feasible in deep networks
-        for layer in self.params[:-1]:
+        for layer in self.layers[:-1]:
             x = F.relu(layer(x))
 
         #sigmoid to make a probability of being true or false reasonable
@@ -88,7 +88,7 @@ class Net(nn.Module):
     
     
 #Creates the network object
-net = Net(structure).float()
+net = Net(structure)
 optimizer = optim.Adam(net.parameters(), lr = eta)
 
 #loops through each epoch
