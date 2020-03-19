@@ -277,8 +277,12 @@ while success:
     #Defaults a sum of the location of moving pixels
     locX, locY = 0, 0
 
+    #Calculates where the bottom of the video and horizon line will be
+    bottomOfFrame = newFrame.shape[0]
+    horizonLine   = (bottomOfFrame) // 2
+
     #Loops through the row indicies
-    for row in range(0, newFrame.shape[0], 1):
+    for row in range(0, horizonLine, 1):
 
         #Loops through the column indicies
         for col in range(0, newFrame.shape[1], 1):
@@ -397,7 +401,9 @@ while success:
     #Reads in the next frame
     success, originalFrame = video.read()
 
-    #Loads in the next frame and resizes it
-    newFrame = maxPool(originalFrame, KERNEL_SIZE, STRIDE)
+    #If the frame was loaded successfully
+    if success:
+        #Loads in the next frame and resizes it
+        newFrame = maxPool(originalFrame, KERNEL_SIZE, STRIDE)
 
 ###############################################################################
