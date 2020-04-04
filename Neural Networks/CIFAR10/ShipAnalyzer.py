@@ -1,5 +1,6 @@
 from LayeredCNN import Net
 from PIL import Image
+import time
 import numpy as np
 import torch
 import torch.nn as nn
@@ -13,7 +14,7 @@ IMAGE = './unnamed.jpg'
 # Which state to load
 STATE_PATH = './states/'            # Path to states folder
 NETWORK_TYPE = '3xConv_MaxPool'     # Which CNN structure to use
-EPOCH = '7'                         # Which training epoch to load the state from
+EPOCH = '26'                        # Which training epoch to load the state from
 
 # Generate filename
 STATE_FILE = STATE_PATH + NETWORK_TYPE + '/cifar_net_' + EPOCH
@@ -26,6 +27,8 @@ data_transforms = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
 ])
+
+start = time.time()
 
 print('Reading image...')
 image = Image.open(IMAGE)
@@ -44,6 +47,9 @@ out = net(batch_t)
 _, index = torch.max(out, 1)
 percentage = torch.nn.functional.softmax(out, dim=1)[0] * 100
 
+end = time.time()
+processing_time = end-start
+print('{0:2.3f}s of processing time'.format(processing_time))
 print('{0:s}:\t{1:3.3f}% Confident\n\n'.format(classes[8], percentage[8].item()))
 
 _, indices = torch.sort(out, descending=True)

@@ -11,11 +11,11 @@ import torchvision.transforms as transforms
 
 # Adjustable parameters
 TYPE = '3xConv_MaxPool'
-LAST_STATE = 26                                 # Last network state that was saved
+LAST_STATE = 62                                 # Last network state that was saved
 TRAINING_EPOCHS = 100                            # Number of epochs of training
 LOAD_FLAG = True                                 # Load from a previous state
-TRAINING_FLAG = False                            # Whether or not to train the network, must not be false if ASSESSMENT_MODE is 0 or 1
-ASSESSMENT_MODE = 2                             # 0-None, 1-During Training, 2-Quick Assessment
+TRAINING_FLAG = True                            # Whether or not to train the network, must not be false if ASSESSMENT_MODE is 0 or 1
+ASSESSMENT_MODE = 1                             # 0-None, 1-During Training, 2-Quick Assessment
 
 # Non-adjustable parameters
 PATH = './states/'+TYPE+'/cifar_net_'            # Path and name of NN save states
