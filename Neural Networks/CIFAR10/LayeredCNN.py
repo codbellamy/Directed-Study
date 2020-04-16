@@ -37,7 +37,6 @@ class Net(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2),
         )
 
-
         self.fc_layer = nn.Sequential(
             nn.Dropout(p=0.1),
             nn.Linear(4096, 1024),
@@ -47,7 +46,6 @@ class Net(nn.Module):
             nn.Dropout(p=0.1),
             nn.Linear(512, 10)
         )
-
 
     def forward(self, x):
         """Perform forward."""

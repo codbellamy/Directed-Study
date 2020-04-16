@@ -1,11 +1,10 @@
-import json
 from LayeredCNN import Net
 from PIL import Image
 import time
 from math import sqrt
 from math import ceil
-import matplotlib
-import matplotlib.pyplot as plt
+# import matplotlib
+# import matplotlib.pyplot as plt
 import sys
 import torch
 import torch.nn as nn
@@ -24,7 +23,7 @@ NETWORK_TYPE = '3xConv_MaxPool'     # Which CNN structure to use
 EPOCH = '62'                        # Which training epoch to load the state from
 
 # Generate filename
-STATE_FILE = STATE_PATH + NETWORK_TYPE + '/cifar_net_' + EPOCH
+STATE_FILE = './cifar_net_' + EPOCH
 
 classes = ('plane', 'car', 'bird', 'cat',
            'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
@@ -56,7 +55,7 @@ print('Reading image...')
 try:
     image = Image.open(IMAGE) # Image to pass through the network
 except FileNotFoundError as identifier:
-    print('File not found!')
+    print('{0:s} not found! Did you include the extension?'.format(IMAGE))
     raise
 
 image_t = data_transforms(image) # Perform transformations to the image
@@ -85,8 +84,13 @@ end = time.time()
 processing_time = end-start
 print('{0:2.3f}s of processing time'.format(processing_time))
 
-# Print the confidence in classification of a ship
-print('{0:s}:\t{1:3.3f}% Confident\n\n'.format(classes[8], percentage[8].item()))
+# # Print the confidence in classification of a ship
+# print('{0:s}:\t{1:3.3f}% Confident\n\n'.format(classes[8], percentage[8].item()))
+
+_, indices = torch.sort(out, descending=True)
+print('Top 5 Categories\n')
+for classification in enumerate([(classes[idx], percentage[idx].item()) for idx in indices[0][:5]], start=1):
+    print('{0:d}:\t{1:s}\t{2:3.3f}%'.format(classification[0],classification[1][0], classification[1][1]))
 
 # # Save images of feature maps
 # print('\nProcessing convolutional feature map visualization...')
